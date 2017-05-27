@@ -2,7 +2,7 @@
   <div class="goods">
     <div class="meun-wrapper" ref="menuWrapper">
       <ul>
-        <li v-for="item in goods" class="meun-item ">
+        <li v-for="(item,index) in goods" class="meun-item " :class="[currentIndex===index?'current':'']" @click="selectMenu(index,$event)">
           <span class="text border-1px">
             <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
           </span>
@@ -11,7 +11,7 @@
     </div>
     <div class="foods-wrapper" ref="foodsWrapper">
       <ul>
-        <li class="food-list food-list-hook" v-for="item in goods">
+        <li class="food-list food-list-hook" v-for="(item,index) in goods" >
           <h1 class="title">{{item.name}}</h1>
           <ul>
             <li class="food-item border-1px" v-for="food in item.foods">
@@ -25,16 +25,22 @@
                 <div class="price">
                   <span class="now">￥{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
+    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 <script type="text/ecmascript-6">
   import BScorll from 'better-scroll';
+  import shopcart from '../shopcart/shopcart.vue';
+  import cartcontrol from '../cartcontrol/cartcontrol.vue';
   const ERR_OK = 200;
   export default {
     props: {
@@ -76,8 +82,19 @@
       });
     },
     methods: {
+      selectMenu (index, event) {
+        // 防止pc端点击两次
+        if (!event._constructed) {
+          return;
+        };
+        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
+        let el = foodList[index];
+        this.foodsScoll.scrollToElement(el, 300);
+      },
       _initScroll() {
-        this.menuScoll = new BScorll(this.$refs.menuWrapper, {});
+        this.menuScoll = new BScorll(this.$refs.menuWrapper, {
+          click: true
+        });
         this.foodsScoll = new BScorll(this.$refs.foodsWrapper, {
           probeType: 3
         });
@@ -95,6 +112,10 @@
           this.listHeight.push(height);
         };
       }
+    },
+    components: {
+      shopcart,
+      cartcontrol
     }
   };
 </script>
@@ -117,6 +138,14 @@
         width:56px
         line-heigth:14px
         padding: 0 12px
+        &.current
+          position:relative
+          z-index:10
+          margin-top:-1px
+          background:#fff
+          font-weight:700
+          .text
+            border-none()
         .icon
           display:inline-block
           width: 12px
@@ -191,5 +220,9 @@
               text-decoration: line-through
               font-size:10px
               color:rgb(147,153,159)
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            bottom: 12px
 
 </style>
