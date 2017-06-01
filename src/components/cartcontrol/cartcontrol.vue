@@ -48,11 +48,7 @@
       display:inline-block
       padding:6px
       transition: all .4s linear
-      &.move-enter-active,&.move-leave
-          transform: translate3d(0, 0, 0)
-          opacity:1
-          .inner
-            transform: rotate(0);
+      transform: translate3d(0, 0, 0)
       &.move-enter,&.move-leave-active
           opacity:0
           transform: translate3d(24px, 0, 0)
@@ -63,6 +59,7 @@
         line-height:24px
         font-size:24px
         color: rgb(0,160,220)
+        transform: rotate(0);
     .cart-count
       display:inline-block
       vertical-align: top
